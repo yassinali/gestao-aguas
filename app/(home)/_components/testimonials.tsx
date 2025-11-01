@@ -1,6 +1,7 @@
 "use client"
 
 import { useInView } from "@/hooks/use-in-view"
+import Image from "next/image"
 
 type Testimonial = {
   name: string
@@ -34,10 +35,11 @@ function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; ind
         {testimonial.text}
       </p>
       <div className="flex items-center gap-4">
-        <img
+        <Image
           src={testimonial.image || "/placeholder.svg"}
           alt={testimonial.name}
           className="w-12 h-12 rounded-full object-cover group-hover:scale-110 transition-transform duration-300"
+          width={48} height={48}
         />
         <div>
           <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">

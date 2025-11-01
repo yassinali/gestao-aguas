@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Hero() {
   return (
     <section
@@ -40,10 +42,11 @@ export default function Hero() {
           <div className="relative animate-slide-in-right">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl blur-2xl"></div>
             <div className="relative aspect-square rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center overflow-hidden shadow-2xl">
-              <img
+              <Image
                 src="/modern-water-faucet-crystal-water-droplets.jpg"
                 alt="Água cristalina saindo de uma torneira moderna"
                 className="w-full h-full object-cover rounded-2xl"
+                width={500} height={500}
               />
             </div>
             <div className="absolute -bottom-4 -right-4 bg-gradient-to-r from-accent to-secondary text-accent-foreground px-6 py-3 rounded-lg shadow-lg font-semibold animate-scale-up">
