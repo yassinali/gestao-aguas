@@ -46,7 +46,7 @@ export default function Header() {
               href="#depoimentos"
               className="text-sm font-medium text-foreground hover:text-primary transition-colors duration-300 relative group"
             >
-              Depoimentos
+              Testemunhos
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
             </Link>
             <Link
@@ -85,7 +85,7 @@ export default function Header() {
               Sobre Nós
             </Link>
             <Link href="#depoimentos" className="text-sm font-medium text-foreground hover:text-primary">
-              Depoimentos
+              Testemunhos
             </Link>
             <Link href="#contactos" className="text-sm font-medium text-foreground hover:text-primary">
               Contactos

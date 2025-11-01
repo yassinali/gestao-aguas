@@ -1,7 +1,6 @@
 "use client"
 
 import { useInView } from "@/hooks/use-in-view"
-import Image from "next/image"
 
 export default function AboutUs() {
   const { ref: ref1, isInView: isInView1 } = useInView()
@@ -15,8 +14,11 @@ export default function AboutUs() {
             ref={ref1}
             className={`aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden transition-all duration-700 ${isInView1 ? "animate-slide-in-left" : "opacity-0 translate-x-[-40px]"}`}
           >
-            <Image className="w-full h-full object-cover" src={"/professional-team-delivering-water-bottles-to-a-ho.jpg"} fill  alt="Equipa profissional entregando água"/>
-   
+            <img
+              src="/professional-team-delivering-water-bottles-to-a-ho.jpg"
+              alt="Equipa profissional entregando água"
+              className="w-full h-full object-cover"
+            />
           </div>
 
           <div

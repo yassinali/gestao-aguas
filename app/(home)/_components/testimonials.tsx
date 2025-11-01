@@ -1,7 +1,6 @@
 "use client"
 
 import { useInView } from "@/hooks/use-in-view"
-import Image from "next/image";
 
 type Testimonial = {
   name: string
@@ -9,7 +8,6 @@ type Testimonial = {
   text: string
   image?: string
 }
-
 function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; index: number }) {
   const { ref, isInView } = useInView({ threshold: 0.3 })
 
@@ -36,12 +34,11 @@ function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; ind
         {testimonial.text}
       </p>
       <div className="flex items-center gap-4">
-        <Image  src={testimonial.image || "/placeholder.svg"}
+        <img
+          src={testimonial.image || "/placeholder.svg"}
           alt={testimonial.name}
           className="w-12 h-12 rounded-full object-cover group-hover:scale-110 transition-transform duration-300"
-          fill
         />
-      
         <div>
           <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">
             {testimonial.name}
@@ -86,7 +83,7 @@ export default function Testimonials() {
           <h2 className="text-3xl md:text-4xl font-bold text-balance text-foreground mb-4">
             O Que Dizem Nossos Clientes
           </h2>
-          <p className="text-lg text-muted-foreground">Mais de 5000 famílias confiam em nós</p>
+          <p className="text-lg text-muted-foreground">Mais de 100 famílias confiam em nós</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">

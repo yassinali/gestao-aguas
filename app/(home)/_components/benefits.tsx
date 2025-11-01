@@ -63,7 +63,7 @@ export default function Benefits() {
   ]
 
   return (
-    <section id="benefits-section" className="py-20 md:py-32 bg-white">
+    <section id="benefits-section" className="py-10 md:py-12 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
           ref={headerRef}

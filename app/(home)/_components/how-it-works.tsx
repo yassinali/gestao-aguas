@@ -60,13 +60,13 @@ export default function HowItWorks() {
     },
     {
       number: 4,
-      title: "Fatura e Pagamento",
+      title: "Factura e Pagamento",
       description: "A fatura é gerada e enviada por e-mail mensalmente",
     },
   ]
 
   return (
-    <section id="como-funciona" className="py-20 md:py-32 bg-muted">
+    <section id="como-funciona" className="py-10 md:py-10 bg-muted">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
           ref={headerRef}

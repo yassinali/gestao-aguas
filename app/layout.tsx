@@ -13,7 +13,6 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "AquaPure - Fornecimento de Água Potável",
   description: "Serviço confiável de fornecimento de água potável com faturação automática e transparente",
-  generator: "v0.app",
 }
 
 export default function RootLayout({

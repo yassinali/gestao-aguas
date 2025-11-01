@@ -35,7 +35,7 @@ export default function Footer() {
               </li>
               <li>
                 <a href="#depoimentos" className="hover:opacity-100 transition-opacity">
-                  Depoimentos
+                  Testemunhos
                 </a>
               </li>
             </ul>
@@ -69,18 +69,16 @@ export default function Footer() {
             <ul className="space-y-2 text-sm opacity-80">
               <li>
                 <a href="tel:+551234567890" className="hover:opacity-100 transition-opacity">
-                  +55 (12) 3456-7890
+                  +258 (84) 6109813
                 </a>
               </li>
               <li>
-                <a href="mailto:contato@aquapure.com" className="hover:opacity-100 transition-opacity">
-                  contato@aquapure.com
+                <a href="mailto:mozsoftware@gmail.com" className="hover:opacity-100 transition-opacity">
+                  mozsoftware@gmail.com
                 </a>
               </li>
               <li>
-                Rua das Águas, 123
-                <br />
-                São Paulo, SP
+                Matola
               </li>
             </ul>
           </div>
@@ -90,16 +88,13 @@ export default function Footer() {
         <div className="border-t border-background/20 pt-8 flex flex-col sm:flex-row items-center justify-between">
           <p className="text-sm opacity-80">© 2025 AquaPure. Todos os direitos reservados.</p>
           <div className="flex gap-6 mt-4 sm:mt-0">
-            <a href="#" className="text-lg hover:opacity-80 transition-opacity">
+            <a href="https://fb.me/mozsoftware" target="_blank" className="text-lg hover:opacity-80 transition-opacity">
               f
             </a>
-            <a href="#" className="text-lg hover:opacity-80 transition-opacity">
+            <a href="https://x.com/mozsoftware" target="_blank" className="text-lg hover:opacity-80 transition-opacity">
               𝕏
             </a>
-            <a href="#" className="text-lg hover:opacity-80 transition-opacity">
-              ◉
-            </a>
-            <a href="#" className="text-lg hover:opacity-80 transition-opacity">
+            <a href="https://www.linkedin.com/in/mufamaju-ali-630a4295" target="_blank" className="text-lg hover:opacity-80 transition-opacity">
               in
             </a>
           </div>
