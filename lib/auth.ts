@@ -10,7 +10,7 @@ export const auth = betterAuth({
     enabled: true,
   },
   appName: "Water Utility Management",
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
   secret: process.env.BETTER_AUTH_SECRET || "your-secret-key",
   plugins: [],
   user: {
