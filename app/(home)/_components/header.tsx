@@ -15,7 +15,7 @@ export default function Header() {
               A
             </div>
             <span className="text-lg font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              AquaPure
+              AquaFlow
             </span>
           </div>
 
@@ -59,8 +59,8 @@ export default function Header() {
           </div>
 
           <div className="hidden md:block">
-            <button className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 transform hover:scale-105">
-              Solicitar Fornecimento
+            <button className="w-full px-4 cursor-pointer py-2 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-lg font-medium text-sm hover:shadow-lg transition-all duration-300">
+              <Link href="/auth/sign-in">Entrar</Link>
             </button>
           </div>
 
@@ -90,8 +90,8 @@ export default function Header() {
             <Link href="#contactos" className="text-sm font-medium text-foreground hover:text-primary">
               Contactos
             </Link>
-            <button className="w-full px-4 py-2 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-lg font-medium text-sm hover:shadow-lg transition-all duration-300">
-              Solicitar Fornecimento
+            <button className="w-full px-4 cursor-pointer py-2 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-lg font-medium text-sm hover:shadow-lg transition-all duration-300">
+              <Link href="/auth/sign-in">Entrar</Link>
             </button>
           </div>
         )}

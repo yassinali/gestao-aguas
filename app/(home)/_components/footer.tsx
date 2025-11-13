@@ -9,7 +9,7 @@ export default function Footer() {
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
                 A
               </div>
-              <span className="font-bold">AquaPure</span>
+              <span className="font-bold">AquaFlow</span>
             </div>
             <p className="text-sm opacity-80">Fornecimento de água potável com qualidade e transparência</p>
           </div>
@@ -86,7 +86,7 @@ export default function Footer() {
 
         {/* Social Links */}
         <div className="border-t border-background/20 pt-8 flex flex-col sm:flex-row items-center justify-between">
-          <p className="text-sm opacity-80">© 2025 AquaPure. Todos os direitos reservados.</p>
+          <p className="text-sm opacity-80">© 2025 AquaFlow. Todos os direitos reservados.</p>
           <div className="flex gap-6 mt-4 sm:mt-0">
             <a href="https://fb.me/mozsoftware" target="_blank" className="text-lg hover:opacity-80 transition-opacity">
               f

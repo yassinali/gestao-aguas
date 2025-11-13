@@ -27,7 +27,7 @@ export default function AboutUs() {
             ref={ref2}
             className={`flex flex-col gap-6 transition-all duration-700 ${isInView2 ? "animate-fade-in-up" : "opacity-0 translate-y-[30px]"}`}
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-balance text-foreground">Sobre a AquaPure</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-balance text-foreground">Sobre a AquaFlow</h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Com mais de 10 anos de experiência no fornecimento de água potável, a AquaPure é sinônimo de qualidade,
               confiabilidade e excelência no serviço.

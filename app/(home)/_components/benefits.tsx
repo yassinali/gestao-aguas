@@ -71,7 +71,7 @@ export default function Benefits() {
         >
           <h2 className="text-3xl md:text-4xl font-bold text-balance text-foreground mb-4">
             Por que escolher a{" "}
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">AquaPure</span>?
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">AquaFlow</span>?
           </h2>
           <p className="text-lg text-muted-foreground">Oferecemos o melhor em qualidade, confiabilidade e serviço</p>
         </div>
