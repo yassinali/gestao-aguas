@@ -88,12 +88,7 @@ export default function SignInPage() {
         </form>
 
         <div className="mt-6 text-center text-sm">
-          <p className="text-neutral-medium">
-            Ainda não tem uma conta?{" "}
-            <Link href="/auth/sign-up" className="text-primary font-semibold hover:underline">
-              Registe-se
-            </Link>
-          </p>
+        
         </div>
       </CardContent>
     </Card>
