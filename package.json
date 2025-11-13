@@ -2,12 +2,12 @@
   "name": "sistema-de-gestao-de-agua",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "lint": "eslint ."
-  },
+ "scripts": {
+  "dev": "next dev",
+  "build": "prisma generate && next build",
+  "postinstall": "prisma generate",
+  "start": "next start"
+},
  "dependencies": {
   "@hookform/resolvers": "^3.10.0",
   "@prisma/client": "^6.19.0",
