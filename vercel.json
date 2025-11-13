@@ -1,15 +1,14 @@
 {
-  "build": {
-    "env": {},
-    "builder": "npm install --legacy-peer-deps && npx prisma generate && npm run build",
-    "use": "@vercel/next"
-  },
-  "framework": {
-    "name": "nextjs",
-    "config": {
-      "experimental": {
-        "turbo": false
-      }
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
     }
+  ],
+  "routes": [],
+  "env": {},
+  "build": {
+    "env": {}
   }
 }
