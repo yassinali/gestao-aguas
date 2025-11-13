@@ -9,11 +9,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals = [...(config.externals || []), '@prisma/client'];
-    }
-    return config;
+  turbopack: {
+    resolveAlias: {
+      '@prisma/client': '@prisma/client',
+    },
   },
 };
 
