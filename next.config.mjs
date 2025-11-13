@@ -9,11 +9,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  turbopack: {
-    resolveAlias: {
-      '@prisma/client': '@prisma/client',
-    },
-  },
 };
 
 export default nextConfig;
