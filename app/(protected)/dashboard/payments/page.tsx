@@ -311,7 +311,7 @@ export default function PaymentsPage() {
 
               <Button
                 onClick={handleRecordPayment}
-                className="w-full"
+                className="w-full cursor-pointer"
                 disabled={!selectedInvoice || formData.amount <= 0 || isRecording}
               >
                 {isRecording ? "A registar..." : "Registar Pagamento"}

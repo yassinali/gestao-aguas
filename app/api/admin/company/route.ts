@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ company: { ...company, totalPaidRevenue } });
   } catch (error) {
-    console.error("[v0] Error fetching company:", error);
+    console.error("Error fetching company:", error);
     return NextResponse.json({ error: "Failed to fetch company" }, { status: 500 });
   }
 }
@@ -93,7 +93,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ company })
   } catch (error) {
-    console.error("[v0] Error updating company:", error)
+    console.error("Error updating company:", error)
     return NextResponse.json({ error: "Failed to update company" }, { status: 500 })
   }
 }

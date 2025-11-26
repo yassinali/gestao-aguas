@@ -198,7 +198,7 @@ export default function MyMetersPage() {
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" variant="outline" onClick={() => openMeterDetails(meter)}>
+                        <Button size="sm" variant="outline" onClick={() => openMeterDetails(meter)} className="cursor-pointer">
                           Ver
                         </Button>
                       </TableCell>
@@ -273,7 +273,7 @@ export default function MyMetersPage() {
                 </Alert>
               )}
 
-              <Button onClick={() => setIsDialogOpen(false)} className="w-full">
+              <Button onClick={() => setIsDialogOpen(false)} className="w-full cursor-pointer">
                 Fechar
               </Button>
             </div>

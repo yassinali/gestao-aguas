@@ -23,21 +23,25 @@ export async function GET(request: Request) {
         id: true,
         invoiceNumber: true,
         companyId: true,
-        clientId: true,
+        contract: {
+            select: {
+              contractNumber: true,
+              client: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  address: true,
+                },
+              },
+            },
+          },
         meterId: true,
         consumption: true,
         totalAmount: true,
         issuanceDate: true,
         dueDate: true,
         issuedById: true,
-        client: {
-          select: {
-            id: true,
-            name: true,
-            address: true,
-            nrContrato: true,
-          },
-        },
         meter: {
           select: {
             meterNumber: true,
@@ -142,12 +146,12 @@ export async function GET(request: Request) {
           <div class="two-columns">
             <div class="section">
               <div class="section-title">CLIENTE</div>
-              <div style="font-size: 10px;">${invoice.client.name}</div>
-              <div style="font-size: 9px; color: #666;">${invoice.client.address || "N/A"}</div>
+              <div style="font-size: 10px;">${invoice.contract.client.name}</div>
+              <div style="font-size: 9px; color: #666;">${invoice.contract.client.address || "N/A"}</div>
             </div>
             <div class="section">
               <div class="section-title">LOCAL DO ABASTECIMENTO</div>
-              <div style="font-size: 10px;">${invoice.client.address || "N/A"}</div>
+              <div style="font-size: 10px;">${invoice.contract.client.address || "N/A"}</div>
             </div>
           </div>
 
@@ -165,7 +169,7 @@ export async function GET(request: Request) {
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
             <div class="info-row">
               <span class="info-label">Nº DE CONTRATO:</span>
-              <span class="info-value">${invoice.client.nrContrato || "N/A"}</span>
+              <span class="info-value">${invoice.contract.contractNumber || "N/A"}</span>
             </div>
             <div class="info-row">
               <span class="info-label">CATEGORIA:</span>

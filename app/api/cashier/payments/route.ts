@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     // Get invoice
     const invoice = await prisma.invoice.findUnique({
       where: { id: body.invoiceId },
-      include: { client: true },
+      include: { contract: {include:{client:{select:{name:true}}}} },
     })
 
     if (!invoice) {
@@ -127,7 +127,7 @@ export async function POST(request: Request) {
       data: {
         companyId: session.user.companyId!,
         invoiceId: body.invoiceId,
-        clientId: invoice.clientId,
+        clientId: invoice.contract.clientId,
         amount,
         paymentMethod: body.paymentMethod,
         paymentReference: body.paymentReference || null,
@@ -157,8 +157,8 @@ export async function POST(request: Request) {
       userId: session.user.id,
       action: "CREATE_PAYMENT",
       entity: "Client",
-      entityId: invoice.clientId,
-      description: `Cliente "${invoice.client.name}" Pagamento efectuado com sucesso para factura ${body.invoiceNumber}.`,
+      entityId: invoice.contract.clientId,
+      description: `Cliente "${invoice.contract.client.name}" Pagamento efectuado com sucesso para factura ${body.invoiceNumber}.`,
       ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       userAgent: request.headers.get("user-agent") || "unknown",
     },

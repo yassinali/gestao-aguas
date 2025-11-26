@@ -54,7 +54,7 @@ export function InvoicePDFButton({ invoiceId, invoiceNumber, status, remainingAm
       variant="outline"
       onClick={handleDownloadPDF}
       disabled={isLoading}
-      className="gap-2 bg-transparent"
+      className="gap-2 bg-transparent cursor-pointer"
       title="Descarregar factura como PDF"
     >
       {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}

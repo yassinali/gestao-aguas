@@ -21,9 +21,11 @@ export async function GET(request: Request) {
         id: true,
         invoiceNumber: true,
         totalAmount: true,
-        client: {
-          select: { name: true },
-        },
+        contract:{
+          include:{
+            client:true,
+          }
+        }
       },
       orderBy: {
         dueDate: "asc",
@@ -32,7 +34,7 @@ export async function GET(request: Request) {
 
     const formattedInvoices = invoices.map((i) => ({
       ...i,
-      clientName: i.client.name,
+      clientName: i.contract.client.name,
       client: undefined,
     }))
 

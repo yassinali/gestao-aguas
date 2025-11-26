@@ -180,7 +180,7 @@ export default function MyInvoicesPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-neutral-medium">A carregar faturas...</div>
+            <div className="text-center py-8 text-neutral-medium">A carregar facturas...</div>
           ) : filteredInvoices.length === 0 ? (
             <div className="text-center py-8 text-neutral-medium">
               {statusFilter === "ALL" ? "Nenhuma fatura encontrada" : `Nenhuma fatura ${statusFilter.toLowerCase()}`}
@@ -213,10 +213,10 @@ export default function MyInvoicesPage() {
                         <Badge className={getStatusColor(invoice.status)}>{invoice.status}</Badge>
                       </TableCell>
                       <TableCell className="text-right space-x-2 flex justify-end">
-                        <Button size="sm" variant="outline" onClick={() => openInvoiceDetails(invoice)}>
+                        <Button size="sm" variant="outline" className="cursor-pointer" onClick={() => openInvoiceDetails(invoice)}>
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" className="cursor-pointer" variant="outline">
                           <Download className="w-4 h-4" />
                         </Button>
                       </TableCell>
@@ -288,7 +288,7 @@ export default function MyInvoicesPage() {
                 )}
               </div>
 
-              <Button onClick={() => setIsDialogOpen(false)} className="w-full">
+              <Button onClick={() => setIsDialogOpen(false)} className="w-full cursor-pointer">
                 Fechar
               </Button>
             </div>

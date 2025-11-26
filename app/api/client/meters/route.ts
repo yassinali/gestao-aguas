@@ -18,9 +18,11 @@ export async function GET(request: Request) {
 
     const meters = await prisma.meter.findMany({
       where: {
-        client: {
+        contract:{
+          client: {
           createdById: session.user.id,
         },
+        }
       },
       select: {
         id: true,
@@ -35,6 +37,7 @@ export async function GET(request: Request) {
         meterNumber: "asc",
       },
     })
+    
 
     return NextResponse.json({ meters })
   } catch (error) {

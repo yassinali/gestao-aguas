@@ -78,15 +78,19 @@ export async function GET(
     const client = await prisma.client.findUnique({
       where: { id },
       include: {
-        meters: {
-          orderBy: { installationDate: "desc" },
-        },
+        contracts:{
+          include:{
+            meters:true,
+          }
+        }
       },
     });
 
     if (!client) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
+
+    console.log("Fetched client:", JSON.stringify(client, null, 2));
 
     return NextResponse.json({ client });
   } catch (error) {

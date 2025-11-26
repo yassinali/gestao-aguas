@@ -187,7 +187,7 @@ export default function UsersPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleAddUser} className="w-full">
+              <Button onClick={handleAddUser} className="w-full cursor-pointer">
                 Criar Utilizador
               </Button>
             </div>
@@ -233,7 +233,7 @@ export default function UsersPage() {
                       </TableCell>
                       <TableCell className="text-sm">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right space-x-2 flex justify-end">
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" className="cursor-pointer">
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button

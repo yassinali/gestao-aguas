@@ -20,11 +20,13 @@ export async function GET(request: Request) {
     // 🔹 Busca as faturas do cliente
     const invoices = await prisma.invoice.findMany({
       where: {
-        clientId,
+        contract:{
+          clientId: clientId
+        },
         companyId: session.user.companyId!,
       },
       include: {
-        client: true,
+      //  client: true,
         meter: true,
         issuedBy: { select: { name: true } },
         payments: { select: { amount: true } },

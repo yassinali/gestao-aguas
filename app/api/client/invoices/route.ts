@@ -18,9 +18,11 @@ export async function GET(request: Request) {
 
     const invoices = await prisma.invoice.findMany({
       where: {
-        client: {
-          createdById: session.user.id,
+        contract:{
+           client: {
+           createdById: session.user.id,
         },
+        },       
       },
       select: {
         id: true,
@@ -39,7 +41,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ invoices })
   } catch (error) {
-    console.error("[v0] Error fetching invoices:", error)
+    console.error("Error fetching invoices:", error)
     return NextResponse.json({ error: "Failed to fetch invoices" }, { status: 500 })
   }
 }

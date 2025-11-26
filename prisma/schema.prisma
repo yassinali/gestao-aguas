@@ -143,31 +143,38 @@ model Company {
   updatedAt DateTime @updatedAt
 
   logs Log[]
+
+  contracts Contract[]
 }
 
-// Client model - main customer data
+///////////////////////////////////////////////////////////
+// CLIENT MODEL
+///////////////////////////////////////////////////////////
+
 model Client {
-  id             String    @id @default(cuid())
+  id             String     @id @default(cuid())
   companyId      String
-  company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company        Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
   email          String
   phone          String
   name           String
   address        String
-  nrContrato     Int?      @unique
-  isActive       Boolean   @default(true)
-  connectionDate DateTime  @default(now())
+
+  isActive       Boolean    @default(true)
+  connectionDate DateTime   @default(now())
+
   createdById    String
-  createdBy      User      @relation("CreatedBy", fields: [createdById], references: [id])
-  
+  createdBy      User       @relation("CreatedBy", fields: [createdById], references: [id])
+
   // Relations
-  meters         Meter[]
-  readings       MeterReading[]
+  contracts      Contract[]
   invoices       Invoice[]
   payments       Payment[]
-  
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  readings       MeterReading[]
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
   @@unique([companyId, email])
   @@index([companyId])
@@ -175,43 +182,81 @@ model Client {
   @@map("clients")
 }
 
-// Meter model - supports full history with replacement tracking
+
+///////////////////////////////////////////////////////////
+// CONTRACT MODEL – UM CLIENTE PODE TER VÁRIOS CONTRATOS
+///////////////////////////////////////////////////////////
+
+model Contract {
+  id             String    @id @default(cuid())
+  companyId      String
+  company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  clientId       String
+  client         Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  contractNumber Int
+  isActive       Boolean   @default(true)
+  startDate      DateTime  @default(now())
+  endDate        DateTime?
+
+  // Relations
+  meters         Meter[]
+  readings       MeterReading[]
+  invoices       Invoice[]
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([companyId, contractNumber])
+  @@index([clientId])
+  @@map("contracts")
+}
+
+
+///////////////////////////////////////////////////////////
+// METER MODEL – CONTADOR LIGADO AO CONTRATO (NÃO AO CLIENTE)
+///////////////////////////////////////////////////////////
+
 model Meter {
   id                String      @id @default(cuid())
   companyId         String
   company           Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  clientId          String
-  client            Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  
+
+  contractId        String
+  contract          Contract    @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
   meterNumber       String
   serialNumber      String
-  
-  // Status and lifecycle
+
   status            MeterStatus @default(ACTIVE)
   installationDate  DateTime    @default(now())
   lastReading       Decimal     @default(0)
   lastReadingDate   DateTime?
-  
+
   isCurrentMeter    Boolean     @default(true)
+
+  // Replacement Tracking
   replacedAt        DateTime?
   replacedById      String?     @unique
   replacedBy        Meter?      @relation("MeterReplacement", fields: [replacedById], references: [id])
   replacedMeter     Meter?      @relation("MeterReplacement")
+
   replacedByUserId  String?
   replacedByUser    User?       @relation("MeterReplacedBy", fields: [replacedByUserId], references: [id])
-  
+
   replacementReason String?
   notes             String?
-  
+
   // Relations
   readings          MeterReading[]
   invoices          Invoice[]     @relation("InvoiceMeter")
-  
+
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
 
   @@unique([companyId, meterNumber])
-  @@index([clientId])
+  @@index([contractId])
   @@index([companyId])
   @@index([status])
   @@map("meters")
@@ -224,82 +269,96 @@ enum MeterStatus {
   REPLACED
 }
 
-// MeterReading model - complete meter reading history
+
+///////////////////////////////////////////////////////////
+// READINGS – LIGADAS AO CONTRATO + CONTADOR
+///////////////////////////////////////////////////////////
+
 model MeterReading {
   id              String   @id @default(cuid())
   companyId       String
+
+  contractId      String
+  contract        Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
   meterId         String
   meter           Meter    @relation(fields: [meterId], references: [id], onDelete: Cascade)
-  
-  clientId        String
-  client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  
+
   reading         Decimal
   previousReading Decimal
   consumption     Decimal
-  
+
   readingDate     DateTime @default(now())
+
   recordedById    String
   recordedBy      User     @relation("RecordedBy", fields: [recordedById], references: [id])
-  
+
   notes           String?
-  
+
   createdAt       DateTime @default(now())
 
   @@index([meterId])
+  @@index([contractId])
   @@index([readingDate])
-  @@index([recordedById])
   @@map("readings")
+  clients Client[]
 }
 
-// Invoice model
+
+
+///////////////////////////////////////////////////////////
+// INVOICE – LIGADA AO CONTRATO + CONTADOR
+///////////////////////////////////////////////////////////
+
 model Invoice {
   id              String        @id @default(cuid())
   companyId       String
   company         Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  
-  invoiceNumber   String
-  clientId        String
-  client          Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  
+
+  contractId      String
+  contract        Contract      @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
   meterId         String
   meter           Meter?        @relation("InvoiceMeter", fields: [meterId], references: [id])
-  
-  
+
+  invoiceNumber   String
   previousReading Decimal
   currentReading  Decimal
   consumption     Decimal
-  
+
   baseCharge      Decimal
   unitPrice       Decimal
   totalAmount     Decimal
-  
+
   issuanceDate    DateTime      @default(now())
   dueDate         DateTime
   status          InvoiceStatus @default(PENDING)
   notes           String?
-  
+
   issuedById      String
   issuedBy        User          @relation("IssuedBy", fields: [issuedById], references: [id])
+
   payments        Payment[]
-  
+
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
   @@unique([companyId, invoiceNumber])
-  @@index([clientId])
+  @@index([contractId])
   @@index([companyId])
   @@index([status])
   @@index([dueDate])
   @@map("invoices")
+  clients Client[]
 }
 
 enum InvoiceStatus {
   PENDING
   PAID
   OVERDUE
-  CANCELLED
+  CANCELED
 }
+
 
 // Payment model
 model Payment {

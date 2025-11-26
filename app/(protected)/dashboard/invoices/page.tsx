@@ -34,7 +34,7 @@ import { InvoicePDFButton } from "@/components/invoice-pdf-button";
 interface Invoice {
   id: string;
   invoiceNumber: string;
-  client: { name: string };
+  contract: { client:{name: string} };
   consumption: number;
   totalAmount: number;
   remainingAmount: number;
@@ -235,7 +235,7 @@ export default function InvoicesHistoryPage() {
                         <TableCell className="font-medium">
                           {invoice.invoiceNumber}
                         </TableCell>
-                        <TableCell>{invoice.client.name}</TableCell>
+                        <TableCell>{invoice.contract.client.name}</TableCell>
                         <TableCell>{invoice.consumption}</TableCell>
                         <TableCell className="font-semibold">
                           {Number(invoice.totalAmount).toFixed(2)} MT

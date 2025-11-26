@@ -11,6 +11,7 @@ export async function POST(request: Request) {
       if (!session || (session.user.role !== "CASHIER" && session.user.role !== "ADMIN")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+  
 
     if (!session.user.companyId) {
       return NextResponse.json({ error: "Company not assigned" }, { status: 400 })
