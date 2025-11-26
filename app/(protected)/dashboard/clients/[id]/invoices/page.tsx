@@ -65,7 +65,7 @@ export default function ClientInvoicesPage() {
       if (!response.ok) throw new Error("Failed to fetch invoices");
 
       const data = await response.json();
-      if (data.invoices.length > 0) setClientName(data.invoices[0].client.name);
+      if (data.invoices.length > 0) setClientName(data.invoices[0].contract.client.name);
 
       // Calcula remainingAmount direto
       const invoicesWithRemaining = data.invoices.map((inv: any) => ({

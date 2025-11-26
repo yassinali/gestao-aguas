@@ -54,6 +54,7 @@ export async function GET(request: Request) {
         phone: true,
         address: true,
         createdAt: true,
+        isActive:true,
 
         contracts: {
           select: {
@@ -127,7 +128,7 @@ export async function POST(request: Request) {
 
     const data = await request.json();
 
-    const { name, email, phone, address, meterNumber, serialNumber } = data;
+    const { name, email, phone, address, meterNumber, serialNumber,currentReading } = data;
 
     const contractNumber = await generateUniqueContractNumber(
       session.user.companyId
@@ -153,6 +154,7 @@ export async function POST(request: Request) {
                 companyId: session.user.companyId,
                 meterNumber,
                 serialNumber,
+                lastReading: currentReading,
                 status: "ACTIVE",
                 installationDate: new Date(),
                 isCurrentMeter: true,

@@ -1,20 +1,26 @@
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
-import { NextResponse } from "next/server"
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers })
+    const session = await auth.api.getSession({ headers: request.headers });
 
-    if (!session || (session.user.role !== "CASHIER" && session.user.role !== "ADMIN")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (
+      !session ||
+      (session.user.role !== "CASHIER" && session.user.role !== "ADMIN")
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url)
-    const invoiceId = searchParams.get("invoiceId")
+    const { searchParams } = new URL(request.url);
+    const invoiceId = searchParams.get("invoiceId");
 
     if (!invoiceId) {
-      return NextResponse.json({ error: "invoiceId is required" }, { status: 400 })
+      return NextResponse.json(
+        { error: "invoiceId is required" },
+        { status: 400 }
+      );
     }
 
     const invoice = await prisma.invoice.findUnique({
@@ -24,18 +30,18 @@ export async function GET(request: Request) {
         invoiceNumber: true,
         companyId: true,
         contract: {
-            select: {
-              contractNumber: true,
-              client: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                  address: true,
-                },
+          select: {
+            contractNumber: true,
+            client: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                address: true,
               },
             },
           },
+        },
         meterId: true,
         consumption: true,
         totalAmount: true,
@@ -54,37 +60,60 @@ export async function GET(request: Request) {
           },
         },
       },
-    })
+    });
 
     if (!invoice) {
-      return NextResponse.json({ error: "Invoice not found" }, { status: 404 })
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
     }
 
     if (invoice.companyId !== session.user.companyId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     const payments = await prisma.payment.findMany({
       where: { invoiceId },
       select: { amount: true },
-    })
+    });
 
-    const consumption = Number(invoice.consumption)
-    const totalAmount = Number(invoice.totalAmount)
-    const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0)
-    const remainingAmount = totalAmount - totalPaid
+    // Conversão de Decimal para Number
+    const currentConsumption = Number(invoice.consumption);
+    const totalAmount = Number(invoice.totalAmount); // total já inclui IVA
+    const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+    const remainingAmount = totalAmount - totalPaid;
 
-    const issuanceDate = new Date(invoice.issuanceDate).toLocaleDateString("pt-PT", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    })
+    // Cálculo de subtotal, IVA e preço unitário
+    const subtotal = totalAmount / 1.16; // retirando IVA de 16%
+    const iva = totalAmount - subtotal;
+    const unitPrice = subtotal / currentConsumption;
+
+    // Obter leitura anterior
+    const previousInvoice = await prisma.invoice.findFirst({
+      where: {
+        meterId: invoice.meterId,
+        issuanceDate: { lt: invoice.issuanceDate }, // antes da atual
+      },
+      orderBy: { issuanceDate: "desc" },
+      select: { consumption: true },
+    });
+
+    const previousConsumption = previousInvoice
+      ? Number(previousInvoice.consumption)
+      : 0;
+
+    const issuanceDate = new Date(invoice.issuanceDate).toLocaleDateString(
+      "pt-PT",
+      {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }
+    );
 
     const dueDate = new Date(invoice.dueDate).toLocaleDateString("pt-PT", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
-    })
+    });
 
     const html = `
       <!DOCTYPE html>
@@ -146,12 +175,18 @@ export async function GET(request: Request) {
           <div class="two-columns">
             <div class="section">
               <div class="section-title">CLIENTE</div>
-              <div style="font-size: 10px;">${invoice.contract.client.name}</div>
-              <div style="font-size: 9px; color: #666;">${invoice.contract.client.address || "N/A"}</div>
+              <div style="font-size: 10px;">${
+                invoice.contract.client.name
+              }</div>
+              <div style="font-size: 9px; color: #666;">${
+                invoice.contract.client.address || "N/A"
+              }</div>
             </div>
             <div class="section">
               <div class="section-title">LOCAL DO ABASTECIMENTO</div>
-              <div style="font-size: 10px;">${invoice.contract.client.address || "N/A"}</div>
+              <div style="font-size: 10px;">${
+                invoice.contract.client.address || "N/A"
+              }</div>
             </div>
           </div>
 
@@ -169,7 +204,9 @@ export async function GET(request: Request) {
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
             <div class="info-row">
               <span class="info-label">Nº DE CONTRATO:</span>
-              <span class="info-value">${invoice.contract.contractNumber || "N/A"}</span>
+              <span class="info-value">${
+                invoice.contract.contractNumber || "N/A"
+              }</span>
             </div>
             <div class="info-row">
               <span class="info-label">CATEGORIA:</span>
@@ -179,7 +216,9 @@ export async function GET(request: Request) {
 
           <div class="info-row" style="margin-bottom: 15px;">
             <span class="info-label">CONTADOR Nº:</span>
-            <span class="info-value">${invoice.meter?.meterNumber || "N/A"}</span>
+            <span class="info-value">${
+              invoice.meter?.meterNumber || "N/A"
+            }</span>
           </div>
 
           <div class="section">
@@ -192,10 +231,10 @@ export async function GET(request: Request) {
                 <th>Consumo</th>
               </tr>
               <tr>
-                <td>${new Date(invoice.issuanceDate).toLocaleDateString("pt-PT")}</td>
-                <td class="number">0</td>
-                <td>${new Date(invoice.issuanceDate).toLocaleDateString("pt-PT")}</td>
-                <td class="number">${consumption}m³</td>
+                <td>${issuanceDate}</td>
+                <td class="number">${previousConsumption}</td>
+                <td>${issuanceDate}</td>
+                <td class="number">${currentConsumption}m³</td>
               </tr>
             </table>
           </div>
@@ -212,9 +251,9 @@ export async function GET(request: Request) {
             <tbody>
               <tr>
                 <td>Consumo Água até 5 m³</td>
-                <td class="number">${consumption}</td>
-                <td class="number">${(totalAmount / consumption).toFixed(2)}</td>
-                <td class="number">${totalAmount.toFixed(2)}</td>
+                <td class="number">${currentConsumption}</td>
+                <td class="number">${unitPrice.toFixed(2)}</td>
+                <td class="number">${subtotal.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
@@ -222,15 +261,15 @@ export async function GET(request: Request) {
           <div class="totals">
             <div class="totals-row">
               <span>SUB-TOTAL</span>
-              <span>${totalAmount.toFixed(2)}</span>
+              <span>${subtotal.toFixed(2)}</span>
             </div>
             <div class="totals-row">
               <span>MULTA</span>
               <span>0,00</span>
             </div>
             <div class="totals-row">
-              <span>IVA (75%*16%)</span>
-              <span>0,00</span>
+              <span>IVA (16%)</span>
+              <span>${iva.toFixed(2)}</span>
             </div>
           </div>
 
@@ -241,7 +280,9 @@ export async function GET(request: Request) {
             </div>
             <div class="totals-row" style="margin-top: 8px;">
               <span><strong>SALDO TOTAL A PAGAR</strong></span>
-              <span class="${remainingAmount > 0 ? "total-pending" : "total-paid"}"><strong>${remainingAmount.toFixed(2)} MT</strong></span>
+              <span class="${
+                remainingAmount > 0 ? "total-pending" : "total-paid"
+              }"><strong>${remainingAmount.toFixed(2)} MT</strong></span>
             </div>
           </div>
 
@@ -277,7 +318,9 @@ export async function GET(request: Request) {
           <div style="font-size: 8px; margin: 15px 0; font-weight: bold;">Pagamentos por Canais Electrónicos</div>
           <div style="font-size: 8px; margin-bottom: 5px;">Entidade: 50100</div>
           <div style="font-size: 8px; margin-bottom: 5px;">Referência: 33 976 666 830</div>
-          <div style="font-size: 8px; margin-bottom: 15px;">Montante: ${remainingAmount.toFixed(2)} MT</div>
+          <div style="font-size: 8px; margin-bottom: 15px;">Montante: ${remainingAmount.toFixed(
+            2
+          )} MT</div>
 
           <div class="footer-text">
             Caro cliente, A produção, Transporte e Distribuição de água possui custos elevados. Contribua para continuidade do serviço de fornecimento de água pagando a sua Factura de água em qualquer loja da ADRMM e/ou por Meios Electrónicos.
@@ -285,16 +328,19 @@ export async function GET(request: Request) {
         </div>
       </body>
       </html>
-    `
+    `;
 
     return new NextResponse(html, {
       headers: {
         "Content-Type": "text/html; charset=utf-8",
         "Content-Disposition": `inline; filename="Factura_${invoice.invoiceNumber}.html"`,
       },
-    })
+    });
   } catch (error) {
-    console.error("Error generating PDF:", error)
-    return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 })
+    console.error("Error generating PDF:", error);
+    return NextResponse.json(
+      { error: "Failed to generate PDF" },
+      { status: 500 }
+    );
   }
 }

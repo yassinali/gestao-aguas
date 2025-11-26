@@ -79,7 +79,8 @@ export default function PaymentsPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<string>("");
-  const [selectedInvoiceData, setSelectedInvoiceData] = useState<Invoice | null>(null);
+  const [selectedInvoiceData, setSelectedInvoiceData] =
+    useState<Invoice | null>(null);
   const [formData, setFormData] = useState({
     amount: 0, // agora é número
     paymentMethod: "CASH",
@@ -88,7 +89,8 @@ export default function PaymentsPage() {
   });
 
   useEffect(() => {
-    if (session?.user.role !== "CASHIER" && session?.user.role !== "ADMIN") return;
+    if (session?.user.role !== "CASHIER" && session?.user.role !== "ADMIN")
+      return;
 
     const fetchData = async () => {
       try {
@@ -135,7 +137,9 @@ export default function PaymentsPage() {
 
     const amount = Number(formData.amount);
     if (selectedInvoiceData && amount > selectedInvoiceData.totalAmount) {
-      toast(`O valor excede o total da fatura de ${selectedInvoiceData.totalAmount} MT`);
+      toast(
+        `O valor excede o total da fatura de ${selectedInvoiceData.totalAmount} MT`
+      );
       return;
     }
 
@@ -157,7 +161,12 @@ export default function PaymentsPage() {
 
       const data = await response.json();
 
-      setFormData({ amount: 0, paymentMethod: "CASH", paymentReference: "", notes: "" });
+      setFormData({
+        amount: 0,
+        paymentMethod: "CASH",
+        paymentReference: "",
+        notes: "",
+      });
       setSelectedInvoice("");
       setSelectedInvoiceData(null);
       setIsDialogOpen(false);
@@ -168,8 +177,10 @@ export default function PaymentsPage() {
         fetch("/api/cashier/payments"),
       ]);
 
-      if (invoicesRes.ok) setInvoices((await invoicesRes.json()).invoices || []);
-      if (paymentsRes.ok) setPayments((await paymentsRes.json()).payments || []);
+      if (invoicesRes.ok)
+        setInvoices((await invoicesRes.json()).invoices || []);
+      if (paymentsRes.ok)
+        setPayments((await paymentsRes.json()).payments || []);
 
       toast(`Pagamento registado! Recibo: ${data.payment.receiptNumber}`);
     } catch (error) {
@@ -198,11 +209,12 @@ export default function PaymentsPage() {
         {/* Dialogo de registo */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2" disabled={invoices.length === 0}>
               <Plus className="w-4 h-4" />
               Registar Pagamento
             </Button>
           </DialogTrigger>
+
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Registar Pagamento</DialogTitle>
@@ -214,7 +226,10 @@ export default function PaymentsPage() {
               {/* Selecionar fatura */}
               <div>
                 <Label htmlFor="invoice">Selecionar Fatura</Label>
-                <Select value={selectedInvoice} onValueChange={handleInvoiceSelect}>
+                <Select
+                  value={selectedInvoice}
+                  onValueChange={handleInvoiceSelect}
+                >
                   <SelectTrigger id="invoice">
                     <SelectValue placeholder="Escolha uma fatura..." />
                   </SelectTrigger>
@@ -222,7 +237,8 @@ export default function PaymentsPage() {
                     {invoices.length > 0 ? (
                       invoices.map((inv) => (
                         <SelectItem key={inv.id} value={inv.id}>
-                          {inv.invoiceNumber} - {inv.clientName} ({inv.totalAmount} MT)
+                          {inv.invoiceNumber} - {inv.clientName} (
+                          {inv.totalAmount} MT)
                         </SelectItem>
                       ))
                     ) : (
@@ -239,7 +255,10 @@ export default function PaymentsPage() {
                 <div className="bg-neutral-light p-3 rounded-lg">
                   <p className="text-sm">Total da Fatura</p>
                   <p className="text-lg font-semibold text-neutral-dark">
-                    {selectedInvoiceData.totalAmount.toLocaleString("pt-PT", { minimumFractionDigits: 2 })} MT
+                    {selectedInvoiceData.totalAmount.toLocaleString("pt-PT", {
+                      minimumFractionDigits: 2,
+                    })}{" "}
+                    MT
                   </p>
                 </div>
               )}
@@ -289,7 +308,10 @@ export default function PaymentsPage() {
                   id="reference"
                   value={formData.paymentReference}
                   onChange={(e) =>
-                    setFormData({ ...formData, paymentReference: e.target.value })
+                    setFormData({
+                      ...formData,
+                      paymentReference: e.target.value,
+                    })
                   }
                   placeholder="ID da transação ou referência"
                   disabled={!selectedInvoice}
@@ -312,7 +334,9 @@ export default function PaymentsPage() {
               <Button
                 onClick={handleRecordPayment}
                 className="w-full cursor-pointer"
-                disabled={!selectedInvoice || formData.amount <= 0 || isRecording}
+                disabled={
+                  !selectedInvoice || formData.amount <= 0 || isRecording
+                }
               >
                 {isRecording ? "A registar..." : "Registar Pagamento"}
               </Button>
@@ -325,18 +349,25 @@ export default function PaymentsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Total Arrecadado</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Arrecadado
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {totalCollected.toLocaleString("pt-PT", { minimumFractionDigits: 2 })} MT
+              {totalCollected.toLocaleString("pt-PT", {
+                minimumFractionDigits: 2,
+              })}{" "}
+              MT
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Pagamentos Pendentes</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pagamentos Pendentes
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{invoices.length}</div>
@@ -345,10 +376,14 @@ export default function PaymentsPage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Pagamentos Hoje</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pagamentos Hoje
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-primary">{paymentsToday}</div>
+            <div className="text-3xl font-bold text-primary">
+              {paymentsToday}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -365,7 +400,9 @@ export default function PaymentsPage() {
           ) : payments.length === 0 ? (
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Nenhum pagamento registado ainda</AlertDescription>
+              <AlertDescription>
+                Nenhum pagamento registado ainda
+              </AlertDescription>
             </Alert>
           ) : (
             <div className="overflow-x-auto">
@@ -383,15 +420,23 @@ export default function PaymentsPage() {
                 <TableBody>
                   {payments.map((payment) => (
                     <TableRow key={payment.id}>
-                      <TableCell className="font-medium">{payment.receiptNumber}</TableCell>
+                      <TableCell className="font-medium">
+                        {payment.receiptNumber}
+                      </TableCell>
                       <TableCell>{payment.invoice.invoiceNumber}</TableCell>
                       <TableCell>{payment.client.name}</TableCell>
                       <TableCell className="font-semibold">
-                        {Number(payment.amount).toLocaleString("pt-PT", { minimumFractionDigits: 2 })}
+                        {Number(payment.amount).toLocaleString("pt-PT", {
+                          minimumFractionDigits: 2,
+                        })}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {PAYMENT_METHODS.find((m) => m.value === payment.paymentMethod)?.label}
+                          {
+                            PAYMENT_METHODS.find(
+                              (m) => m.value === payment.paymentMethod
+                            )?.label
+                          }
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm">

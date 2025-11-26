@@ -71,6 +71,7 @@ export default function ClientsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isNewMeter, setIsNewMeter] = useState(true);
   const [total, setTotal] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
@@ -80,6 +81,7 @@ export default function ClientsPage() {
     meterNumber: "",
     serialNumber: "",
     nrContrato: 0,
+    currentReading: "0",
   });
 
   useEffect(() => {
@@ -116,6 +118,25 @@ export default function ClientsPage() {
     fetchClients(1, value);
   };
 
+  const handleToggleNewMeter = (checked: boolean) => {
+    setIsNewMeter(checked);
+
+    // Se É cliente novo → leitura = 0
+    if (checked) {
+      setFormData((prev) => ({
+        ...prev,
+        currentReading: "0",
+      }));
+    }
+  };
+
+  const handleReadingChange = (value: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      currentReading: value.toString(),
+    }));
+  };
+
   const handleAddClient = async () => {
     if (
       !formData.name ||
@@ -145,6 +166,7 @@ export default function ClientsPage() {
           meterNumber: "",
           serialNumber: "",
           nrContrato: 0,
+          currentReading: "0",
         });
         setIsDialogOpen(false);
         toast("Cliente e contador registados com sucesso");
@@ -167,7 +189,8 @@ export default function ClientsPage() {
       address: client.address,
       meterNumber: "",
       serialNumber: "",
-      nrContrato: client.contracts[0]?.contractNumber || 0, // CORRIGIDO
+      nrContrato: client.contracts[0]?.contractNumber || 0,
+      currentReading: client.contracts[0]?.meters[0].meterNumber || "0",
     });
     setIsEditDialogOpen(true);
   };
@@ -235,7 +258,7 @@ export default function ClientsPage() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2 cursor-pointer">
               <Plus className="w-4 h-4" />
               Registar cliente
             </Button>
@@ -265,7 +288,7 @@ export default function ClientsPage() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email</Label>Contadores
+                    <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
@@ -335,6 +358,35 @@ export default function ClientsPage() {
                     />
                   </div>
                 </div>
+
+                {/* Checkbox */}
+                <div className="flex items-center gap-2 mt-4">
+                  <input
+                    type="checkbox"
+                    id="newMeter"
+                    checked={isNewMeter}
+                    onChange={(e) => handleToggleNewMeter(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <Label htmlFor="newMeter" className="text-sm">
+                    Cliente novo com contador? (Se não, leitura actual será 0)
+                  </Label>
+                </div>
+
+                {/* Leitura atual */}
+                <div className="mt-2">
+                  <Label htmlFor="currentReading">Leitura Actual</Label>
+                  <Input
+                    id="currentReading"
+                    type="number"
+                    value={formData.currentReading}
+                    onChange={(e) =>
+                      handleReadingChange(Number(e.target.value))
+                    }
+                    disabled={isNewMeter} // Se é novo → não permite digitar
+                    placeholder="0"
+                  />
+                </div>
               </div>
 
               <Button
@@ -394,9 +446,9 @@ export default function ClientsPage() {
                           className="p-1"
                         >
                           {expandedClientId === client.id ? (
-                            <ChevronUp className="w-5 h-5" />
+                            <ChevronUp className="w-5 h-5 cursor-pointer" />
                           ) : (
-                            <ChevronDown className="w-5 h-5" />
+                            <ChevronDown className="w-5 h-5 cursor-pointer" />
                           )}
                         </button>
                         <div className="flex-1">
@@ -421,13 +473,14 @@ export default function ClientsPage() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleEditClient(client)}
+                          className="cursor-pointer"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-600 bg-transparent"
+                          className="text-red-600 bg-transparent cursor-pointer"
                           onClick={() => handleDeleteClient(client.id)}
                         >
                           <Trash2 className="w-4 h-4" />
