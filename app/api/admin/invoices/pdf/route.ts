@@ -57,6 +57,8 @@ export async function GET(request: Request) {
         company: {
           select: {
             name: true,
+            phone: true,
+            address: true,
           },
         },
       },
@@ -161,9 +163,9 @@ export async function GET(request: Request) {
           <div class="header">
             <div class="company-name">${invoice.company?.name || "ADRMM"}</div>
             <div class="company-info">
-              <div>Av. Eduardo Mondlane, nº 1352 - 5º andar</div>
+              <div>${invoice.company?.address || "Matola"}</div>
               <div>Caixa Postal nº 2952, Maputo</div>
-              <div>Telef. +258 21302432/325160 Fax. +258 21324675</div>
+              <div>Telef. ${invoice.company?.phone}</div>
               <div>NUIT: 401337881</div>
               <div>Capital Social: 30.000.000 MZN</div>
             </div>

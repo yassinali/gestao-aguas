@@ -274,8 +274,9 @@ export default function PaymentsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, amount: Number(e.target.value) })
                   }
+                  
                   placeholder="0,00"
-                  disabled={!selectedInvoice}
+                  disabled
                 />
               </div>
 

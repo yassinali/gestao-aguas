@@ -32,8 +32,10 @@ import {
   Phone,
   MapPin,
   Search,
+  LoaderCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { set } from "better-auth";
 
 interface Meter {
   id: string;
@@ -67,6 +69,7 @@ export default function ClientsPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isNewClient, setIsNewClient] = useState(false);
   const [expandedClientId, setExpandedClientId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -148,6 +151,8 @@ export default function ClientsPage() {
       return;
     }
 
+    setIsNewClient(true);
+
     try {
       const response = await fetch("/api/admin/clients", {
         method: "POST",
@@ -178,6 +183,8 @@ export default function ClientsPage() {
       console.error("Failed to add client:", error);
       toast("Erro ao registar cliente");
     }
+
+    setIsNewClient(false);
   };
 
   const handleEditClient = (client: Client) => {
@@ -320,7 +327,7 @@ export default function ClientsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, address: e.target.value })
                       }
-                      placeholder="Rua Principal, nº 123"
+                      placeholder="Rua nº 123"
                     />
                   </div>
                 </div>
@@ -392,8 +399,9 @@ export default function ClientsPage() {
               <Button
                 onClick={handleAddClient}
                 className="w-full cursor-pointer"
+                disabled={isNewClient}
               >
-                Registar Cliente e Contador
+                {isNewClient ? <><LoaderCircle className="animate-spin h-4 w-4"/> A registar... </> : "Registar Cliente e Contador"}
               </Button>
             </div>
           </DialogContent>
