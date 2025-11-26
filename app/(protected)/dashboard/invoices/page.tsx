@@ -264,6 +264,7 @@ export default function InvoicesHistoryPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <InvoicePDFButton
+                            hasPayments={invoice.totalAmount > invoice.remainingAmount}
                             invoiceId={invoice.id}
                             invoiceNumber={invoice.invoiceNumber}
                             status={invoice.status}
