@@ -37,7 +37,7 @@ export default function DelinquentClientsPage() {
           setClients(data.clients)
         }
       } catch (error) {
-        console.error("[v0] Error fetching delinquent clients:", error)
+        console.error("Error fetching delinquent clients:", error)
         toast("Erro ao carregar clientes em dívida")
       } finally {
         setIsLoading(false)

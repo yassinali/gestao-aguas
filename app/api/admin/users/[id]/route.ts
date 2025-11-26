@@ -2,12 +2,13 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse, NextRequest } from "next/server"
 
-export async function PATCH(
+export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params // 👈 Desestruturação assíncrona
+    // params agora é uma Promise → precisamos usar await
+    const { id } = await context.params
 
     const session = await auth.api.getSession({
       headers: request.headers,
@@ -19,17 +20,35 @@ export async function PATCH(
 
     const body = await request.json()
 
+    const { name, email, role } = body
+
+    // Validação opcional
+    if (!name || !email || !role) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      )
+    }
+
     const user = await prisma.user.update({
       where: { id },
-      data: {
-        role: body.role,
-        name: body.name,
-      },
+      data: { name, email, role }, // PUT = atualiza tudo
     })
 
     return NextResponse.json({ user })
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating user:", error)
-    return NextResponse.json({ error: "Failed to update user" }, { status: 500 })
+
+    if (error.code === "P2025") {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(
+      { error: "Failed to update user" },
+      { status: 500 }
+    )
   }
 }

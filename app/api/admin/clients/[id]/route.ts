@@ -78,11 +78,15 @@ export async function GET(
     const client = await prisma.client.findUnique({
       where: { id },
       include: {
-        contracts:{
-          include:{
-            meters:true,
-          }
-        }
+        contracts: {
+          include: {
+            meters: {
+              orderBy: {
+                createdAt: "desc",
+              },
+            },
+          },
+        },
       },
     });
 

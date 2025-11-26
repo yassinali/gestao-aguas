@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       totalAmount,
     })
   } catch (error) {
-    console.error("[v0] Error calculating values:", error)
+    console.error("Error calculating values:", error)
     return NextResponse.json({ error: "Failed to calculate values" }, { status: 500 })
   }
 }

@@ -5,17 +5,18 @@ import { NextResponse } from "next/server"
 
 export async function POST(request: Request) {
   try {
+    // 1️⃣ Autenticação
     const session = await auth.api.getSession({
       headers: request.headers,
     })
 
-      if (!session || (session.user.role !== "CASHIER" && session.user.role !== "ADMIN")) {
+    if (!session || (session.user.role !== "CASHIER" && session.user.role !== "ADMIN")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // 2️⃣ Receber dados da requisição
     const body = await request.json()
 
-    // Validation
     if (!body.meterId || body.reading === undefined) {
       return NextResponse.json({ error: "meterId and reading are required" }, { status: 400 })
     }
@@ -24,14 +25,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "reading must be a positive number" }, { status: 400 })
     }
 
-    // Get the meter and its last reading
+    // 3️⃣ Buscar medidor + contrato
     const meter = await prisma.meter.findUnique({
       where: { id: body.meterId },
       select: {
         lastReading: true,
         status: true,
         companyId: true,
-        clientId: true,
+        contract: {
+          select: {
+            id: true,
+            clientId: true,
+          },
+        },
       },
     })
 
@@ -39,41 +45,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Meter not found" }, { status: 404 })
     }
 
-    // Verify ownership
+    // 4️⃣ Verificar se o medidor pertence à empresa do usuário
     if (meter.companyId !== session.user.companyId) {
       return NextResponse.json({ error: "Unauthorized - meter not in your company" }, { status: 403 })
     }
 
-    // Check if meter is active
+    // 5️⃣ Verificar status do medidor
     if (meter.status !== "ACTIVE") {
       return NextResponse.json({ error: "Cannot record readings for inactive meters" }, { status: 400 })
     }
 
     const newReading = new Decimal(body.reading)
 
-    // Validate reading is not going backwards
+    // 6️⃣ Validar leitura não retrocedendo
     if (newReading.lt(meter.lastReading)) {
       return NextResponse.json({ error: "New reading cannot be less than previous reading" }, { status: 400 })
     }
 
-    // Calculate consumption
+    // 7️⃣ Calcular consumo
     const consumption = newReading.minus(meter.lastReading)
 
-    // Create reading record
+    // 8️⃣ Criar registro de leitura
     const reading = await prisma.meterReading.create({
       data: {
         companyId: session.user.companyId!,
         meterId: body.meterId,
+        contractId: meter.contract.id,
         reading: newReading,
         previousReading: meter.lastReading,
         consumption: consumption,
         recordedById: session.user.id,
         notes: body.notes || null,
-        clientId: meter.clientId,
       },
     })
 
-    // Update meter's last reading
+    // 9️⃣ Atualizar último valor do medidor
     await prisma.meter.update({
       where: { id: body.meterId },
       data: {
@@ -82,11 +88,10 @@ export async function POST(request: Request) {
       },
     })
 
-    console.log(`[v0] Meter reading recorded: ${body.meterId}, consumption: ${consumption}m³`)
 
     return NextResponse.json({ reading }, { status: 201 })
   } catch (error) {
-    console.error("[v0] Error creating reading:", error)
+    console.error("Error creating reading:", error)
     return NextResponse.json({ error: "Failed to create reading" }, { status: 500 })
   }
 }

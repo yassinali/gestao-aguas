@@ -31,7 +31,7 @@ export async function PUT(
 
     return NextResponse.json({ meter })
   } catch (error) {
-    console.error("[v0] Error updating meter:", error)
+    console.error("Error updating meter:", error)
     return NextResponse.json({ error: "Failed to update meter" }, { status: 500 })
   }
 }

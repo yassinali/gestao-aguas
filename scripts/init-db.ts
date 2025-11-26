@@ -4,7 +4,7 @@ import {  Decimal } from "@prisma/client/runtime/library"
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log("[v0] Starting database initialization...")
+  console.log("Starting database initialization...")
 
   try {
     // Create sample company
@@ -31,7 +31,7 @@ async function main() {
       },
     })
 
-    console.log("[v0] ✓ Company created:", company.id)
+   
 
     // Create admin user
     const adminUser = await prisma.user.create({
@@ -44,11 +44,8 @@ async function main() {
       },
     })
 
-    console.log("[v0] ✓ Admin user created:", adminUser.id)
-
-    console.log("[v0] Database initialization complete!")
   } catch (error) {
-    console.error("[v0] Error initializing database:", error)
+    console.error("Error initializing database:", error)
     process.exit(1)
   } finally {
     await prisma.$disconnect()

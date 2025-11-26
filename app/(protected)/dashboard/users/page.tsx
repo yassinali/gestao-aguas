@@ -1,13 +1,26 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import { useSessionData } from "@/lib/hooks/useSessionData";
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -15,127 +28,196 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Edit, Trash2 } from "lucide-react"
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, Edit, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface User {
-  id: string
-  name: string
-  email: string
-  role: "ADMIN" | "CASHIER" | "CLIENT"
-  emailVerified: boolean
-  createdAt: string
+  id: string;
+  name: string;
+  email: string;
+  role: "ADMIN" | "CASHIER" | "CLIENT";
+  emailVerified: boolean;
+  createdAt: string;
 }
 
 export default function UsersPage() {
-  const { data: session } = useSessionData()
-  const [users, setUsers] = useState<User[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { data: session } = useSessionData();
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // NOVO: modal de edição
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     role: "CASHIER" as const,
-  })
+  });
+
+  // NOVO: form de edição
+  const [editData, setEditData] = useState({
+    name: "",
+    email: "",
+    role: "CASHIER" as const as User["role"],
+  });
 
   useEffect(() => {
-    if (session?.user.role !== "ADMIN") return
+    if (session?.user.role !== "ADMIN") return;
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch("/api/admin/users")
+        const response = await fetch("/api/admin/users");
         if (response.ok) {
-          const data = await response.json()
-          setUsers(data.users)
+          const data = await response.json();
+          setUsers(data.users);
         }
       } catch (error) {
-        console.error("Falha ao carregar utilizadores:", error)
-        toast("Falha ao carregar utilizadores")
+        console.error("Falha ao carregar utilizadores:", error);
+        toast("Falha ao carregar utilizadores");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchUsers()
-  }, [session, toast])
+    fetchUsers();
+  }, [session, toast]);
 
   const handleAddUser = async () => {
     if (!formData.name || !formData.email || !formData.password) {
-      toast("Preencha todos os campos")
-      return
+      toast("Preencha todos os campos");
+      return;
     }
+
+    setIsSaving(true);
 
     try {
       const response = await fetch("/api/admin/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      })
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        setUsers([data.user, ...users])
+        const data = await response.json();
+        setUsers([data.user, ...users]);
         setFormData({
           name: "",
           email: "",
           password: "",
           role: "CASHIER",
-        })
-        setIsDialogOpen(false)
-        toast("Utilizador criado com sucesso")
+        });
+        setIsDialogOpen(false);
+        toast("Utilizador criado com sucesso");
       } else {
-        throw new Error("Falha ao criar utilizador")
+        throw new Error("Falha ao criar utilizador");
       }
     } catch (error) {
-      console.error("Falha ao adicionar utilizador:", error)
-      toast("Falha ao criar utilizador")
+      console.error("Falha ao adicionar utilizador:", error);
+      toast("Falha ao criar utilizador");
     }
-  }
+
+    setIsSaving(false);
+  };
 
   const handleDeleteUser = async (userId: string) => {
-    if (!confirm("Tem a certeza que pretende eliminar este utilizador?")) return
+    if (!confirm("Tem a certeza que pretende eliminar este utilizador?"))
+      return;
 
     try {
       const response = await fetch(`/api/admin/users?id=${userId}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
-        setUsers(users.filter((u) => u.id !== userId))
-        toast("Utilizador eliminado com sucesso")
+        setUsers(users.filter((u) => u.id !== userId));
+        toast("Utilizador eliminado com sucesso");
       } else {
-        throw new Error("Falha ao eliminar utilizador")
+        throw new Error("Falha ao eliminar utilizador");
       }
     } catch (error) {
-      console.error("Falha ao eliminar utilizador:", error)
-      toast("Falha ao eliminar utilizador")
+      console.error("Falha ao eliminar utilizador:", error);
+      toast("Falha ao eliminar utilizador");
     }
-  }
+  };
+
+  const handleOpenEdit = (user: User) => {
+    setEditingUser(user);
+    setEditData({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditUser = async () => {
+    if (!editingUser) return;
+
+    setIsUpdating(true);
+
+    try {
+      const response = await fetch(`/api/admin/users/${editingUser.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editData),
+      });
+
+      if (response.ok) {
+        setUsers(
+          users.map((u) =>
+            u.id === editingUser.id ? { ...u, ...editData } : u
+          )
+        );
+
+        toast("Utilizador actualizado com sucesso");
+        setIsEditDialogOpen(false);
+      } else {
+        throw new Error("Falha ao editar utilizador");
+      }
+    } catch (error) {
+      console.error("Erro ao editar utilizador:", error);
+      toast("Falha ao editar utilizador");
+    }
+
+    setIsUpdating(false);
+  };
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case "ADMIN":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       case "CASHIER":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-neutral-dark">Utilizadores</h1>
-          <p className="text-neutral-medium mt-2">Gerir administradores e caixas</p>
+          <p className="text-neutral-medium mt-2">
+            Gerir administradores e caixas
+          </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2 cursor-pointer">
               <Plus className="w-4 h-4" />
               Adicionar Utilizador
             </Button>
@@ -143,7 +225,9 @@ export default function UsersPage() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Adicionar Novo Utilizador</DialogTitle>
-              <DialogDescription>Criar uma conta de administrador ou caixa</DialogDescription>
+              <DialogDescription>
+                Criar uma conta de administrador ou caixa
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
@@ -151,7 +235,9 @@ export default function UsersPage() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="João Silva"
                 />
               </div>
@@ -161,7 +247,9 @@ export default function UsersPage() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   placeholder="joao@exemplo.com"
                 />
               </div>
@@ -171,13 +259,20 @@ export default function UsersPage() {
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   placeholder="••••••••"
                 />
               </div>
               <div>
                 <Label htmlFor="role">Função</Label>
-                <Select value={formData.role} onValueChange={(value: any) => setFormData({ ...formData, role: value })}>
+                <Select
+                  value={formData.role}
+                  onValueChange={(value: any) =>
+                    setFormData({ ...formData, role: value })
+                  }
+                >
                   <SelectTrigger id="role">
                     <SelectValue placeholder="Selecionar função" />
                   </SelectTrigger>
@@ -187,8 +282,116 @@ export default function UsersPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleAddUser} className="w-full cursor-pointer">
-                Criar Utilizador
+              <Button
+                onClick={handleAddUser}
+                className="w-full cursor-pointer"
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                      ></path>
+                    </svg>
+                    A criar...
+                  </span>
+                ) : (
+                  "Criar Utilizador"
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* NOVO: MODAL DE EDIÇÃO */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Editar Utilizador</DialogTitle>
+              <DialogDescription>
+                Atualizar dados do utilizador
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Nome Completo</Label>
+                <Input
+                  value={editData.name}
+                  onChange={(e) =>
+                    setEditData({ ...editData, name: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={editData.email}
+                  onChange={(e) =>
+                    setEditData({ ...editData, email: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <Label>Função</Label>
+                <Select
+                  value={editData.role}
+                  onValueChange={(value: any) =>
+                    setEditData({ ...editData, role: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar função" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ADMIN">Administrador</SelectItem>
+                    <SelectItem value="CASHIER">Caixa</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button
+                onClick={handleEditUser}
+                className="w-full cursor-pointer"
+                disabled={isUpdating}
+              >
+                {isUpdating ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+                      ></path>
+                    </svg>
+                    A actualizar...
+                  </span>
+                ) : (
+                  "Guardar Alterações"
+                )}
               </Button>
             </div>
           </DialogContent>
@@ -202,9 +405,13 @@ export default function UsersPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-neutral-medium">A carregar utilizadores...</div>
+            <div className="text-center py-8 text-neutral-medium">
+              A carregar utilizadores...
+            </div>
           ) : users.length === 0 ? (
-            <div className="text-center py-8 text-neutral-medium">Nenhum utilizador encontrado</div>
+            <div className="text-center py-8 text-neutral-medium">
+              Nenhum utilizador encontrado
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -224,16 +431,27 @@ export default function UsersPage() {
                       <TableCell className="font-medium">{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
-                        <Badge className={getRoleBadgeColor(user.role)}>{user.role}</Badge>
+                        <Badge className={getRoleBadgeColor(user.role)}>
+                          {user.role}
+                        </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={user.emailVerified ? "default" : "outline"}>
+                        <Badge
+                          variant={user.emailVerified ? "default" : "outline"}
+                        >
                           {user.emailVerified ? "Verificado" : "Pendente"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell className="text-sm">
+                        {new Date(user.createdAt).toLocaleDateString()}
+                      </TableCell>
                       <TableCell className="text-right space-x-2 flex justify-end">
-                        <Button size="sm" variant="outline" className="cursor-pointer">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="cursor-pointer"
+                          onClick={() => handleOpenEdit(user)}
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
@@ -254,5 +472,5 @@ export default function UsersPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

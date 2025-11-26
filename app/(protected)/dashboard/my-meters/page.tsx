@@ -48,7 +48,7 @@ export default function MyMetersPage() {
           setMeters(data.meters)
         }
       } catch (error) {
-        console.error("[v0] Erro ao carregar contadores:", error)
+        console.error("Erro ao carregar contadores:", error)
         toast("Falha ao carregar contadores")
       } finally {
         setIsLoading(false)

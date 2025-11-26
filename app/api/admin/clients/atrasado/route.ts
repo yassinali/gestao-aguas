@@ -60,7 +60,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ clients: clientsWithDebt })
   } catch (error) {
-    console.error("[v0] Error fetching delinquent clients:", error)
+    console.error("Error fetching delinquent clients:", error)
     return NextResponse.json({ error: "Failed to fetch delinquent clients" }, { status: 500 })
   }
 }

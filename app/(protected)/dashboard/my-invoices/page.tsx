@@ -43,7 +43,7 @@ export default function MyInvoicesPage() {
           setInvoices(data.invoices)
         }
       } catch (error) {
-        console.error("[v0] Error fetching invoices:", error)
+        console.error("Error fetching invoices:", error)
         toast("Falha ao carregar as faturas")
       } finally {
         setIsLoading(false)
