@@ -22,9 +22,9 @@ export function Sidebar({ userRole }: SidebarProps) {
       { href: "/dashboard/clients", label: "Clientes", icon: Users },
       { href: "/dashboard/readings", label: "Leituras de Contadores", icon: FileText },
       { href: "/dashboard/meters", label: "Contadores", icon: FileText },
-      { href: "/dashboard/invoices", label: "Faturas", icon: FileText },
+      { href: "/dashboard/invoices", label: "Facturas", icon: FileText },
       { href: "/dashboard/payments", label: "Pagamentos", icon: CreditCard },
-      { href: "/dashboard/my-invoices", label: "As Minhas Faturas", icon: FileText },
+      { href: "/dashboard/my-invoices", label: "As Minhas Facturas", icon: FileText },
       { href: "/dashboard/my-meters", label: "Os Meus Contadores", icon: FileText },
       { href: "/dashboard/users", label: "Utilizadores", icon: Users },
       { href: "/dashboard/company", label: "Configurações", icon: Settings },
@@ -33,15 +33,15 @@ export function Sidebar({ userRole }: SidebarProps) {
     const cashierItems = [
       ...commonItems,
       { href: "/dashboard/readings", label: "Leituras de Contadores", icon: FileText },
-      { href: "/dashboard/invoices", label: "Faturas", icon: FileText },
+      { href: "/dashboard/invoices", label: "Facturas", icon: FileText },
       { href: "/dashboard/payments", label: "Pagamentos", icon: CreditCard },
       { href: "/dashboard/my-meters", label: "Os Meus Contadores", icon: FileText },
-      { href: "/dashboard/my-invoices", label: "As Minhas Faturas", icon: FileText },
+      { href: "/dashboard/my-invoices", label: "As Minhas Facturas", icon: FileText },
     ]
 
     const clientItems = [
       ...commonItems,
-      { href: "/dashboard/my-invoices", label: "As Minhas Faturas", icon: FileText },
+      { href: "/dashboard/my-invoices", label: "As Minhas Facturas", icon: FileText },
       { href: "/dashboard/my-meters", label: "Os Meus Contadores", icon: FileText },
     ]
 
