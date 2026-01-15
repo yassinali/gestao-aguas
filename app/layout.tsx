@@ -22,6 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt">
+      <script defer data-tracker="fdf18157-bad5-45be-ae8d-adb30dc1963a" data-hosts="gestao-aguas.vercel.app" src="https://www.webtracky.com/analytics.js"></script>
       <body className={`${poppins} font-sans antialiased`}>
         {children}
         <Analytics />
